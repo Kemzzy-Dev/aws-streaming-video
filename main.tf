@@ -1,5 +1,5 @@
 resource "aws_cloudfront_origin_access_identity" "sample_cloudfront_OAI" {
-  comment = "Some comment"
+  comment = "OAI for video streaming S3 bucket"
 }
 
 resource "aws_cloudfront_distribution" "s3_distribution" {
@@ -11,7 +11,7 @@ resource "aws_cloudfront_distribution" "s3_distribution" {
 
   enabled         = true
   is_ipv6_enabled = true
-  comment         = "used to display video"
+  comment         = "play video"
 
   logging_config {
     include_cookies = false
