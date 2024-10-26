@@ -2,3 +2,6 @@
 .terraform.lock.hcl
 Bleach-82.mkv
 TODO
+terraform.tfstate
+terraform.tfstate.backup
+tfplan

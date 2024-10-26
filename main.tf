@@ -1,23 +1,28 @@
-resource "aws_cloudfront_origin_access_identity" "sample_cloudfront_OAI" {
+resource "aws_cloudfront_origin_access_identity" "cloudfront_OAI" {
   comment = "OAI for video streaming S3 bucket"
 }
 
+# resource "aws_cloudfront_origin_access_control" "sample_cloudfront_OAC" {
+#   name                              = "cloudfront OAC"
+#   description                       = "cloudfront Policy"
+#   origin_access_control_origin_type = "s3"
+#   signing_behavior                  = "always"
+#   signing_protocol                  = "sigv4"
+# }
+
 resource "aws_cloudfront_distribution" "s3_distribution" {
   origin {
-    domain_name = aws_s3_bucket.video_bucket.bucket_regional_domain_name
-    # origin_access_control_id = aws_cloudfront_origin_access_control.sample_cloudfront_OAI.id
-    origin_id = aws_s3_bucket.video_bucket.id
+    domain_name              = aws_s3_bucket.video_bucket.bucket_regional_domain_name
+    origin_id                = aws_s3_bucket.video_bucket.id
+
+    s3_origin_config {
+      origin_access_identity = aws_cloudfront_origin_access_identity.cloudfront_OAI.cloudfront_access_identity_path
+    }
   }
 
   enabled         = true
   is_ipv6_enabled = true
   comment         = "play video"
-
-  logging_config {
-    include_cookies = false
-    bucket          = "mylogs.s3.amazonaws.com"
-    prefix          = "myprefix"
-  }
 
   #   aliases = ["mysite.example.com", "yoursite.example.com"]
 
@@ -44,8 +49,8 @@ resource "aws_cloudfront_distribution" "s3_distribution" {
 
   restrictions {
     geo_restriction {
-      restriction_type = "whitelist"
-      locations        = ["US", "CA", "GB", "DE"]
+      restriction_type = "none"
+      locations        = [ ]
     }
   }
 
@@ -56,27 +61,13 @@ resource "aws_cloudfront_distribution" "s3_distribution" {
   viewer_certificate {
     cloudfront_default_certificate = true
   }
+
+  depends_on = [ aws_s3_bucket.video_bucket ]
 }
 
 
-
-resource "aws_s3_bucket_policy" "video_stream" {
-  bucket = aws_s3_bucket.video_bucket.id
-  policy = <<POLICY
-  {
-    "Version": "2008-10-17",
-    "Id": "PolicyForCloudFrontPrivateContent",
-    "Statement": [
-        {
-            "Sid": "1",
-            "Effect": "Allow",
-            "Principal": {
-                "AWS": "arn:aws:iam::cloudfront:user/CloudFront Origin Access Identity ${aws_cloudfront_origin_access_identity.sample_cloudfront_OAI.id}"
-            },
-            "Action": "s3:GetObject",
-            "Resource": "arn:aws:s3:::${aws_s3_bucket.video_bucket.id}/*"
-        }
-    ]
-  } 
-  POLICY
+output "cloudfront_url" { 
+  value = aws_cloudfront_distribution.s3_distribution.domain_name
 }
+
+
