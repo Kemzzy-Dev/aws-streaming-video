@@ -1,7 +1,10 @@
+# Note: route53 zone and acm certificate validation was done manually on the AWS console because 
+# the domain was bought on namecheap and wasn't transferred to Route53. After transferring the domain to Route53,
+# uncomment the code below.
 
-resource "aws_route53_record" "www" {
+resource "aws_route53_record" "video_subdomain" {
   zone_id = data.aws_route53_zone.zone.zone_id
-  name    = "videostream.devobs.me"
+  name    = var.subdomain
   type    = "CNAME"
   ttl     = 300
   records = [aws_cloudfront_distribution.s3_distribution.domain_name]

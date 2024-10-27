@@ -16,7 +16,7 @@ resource "aws_cloudfront_distribution" "s3_distribution" {
   is_ipv6_enabled = true
   comment         = "play video"
 
-  aliases = ["videostream.devobs.me"]
+  aliases = [var.subdomain]
 
 
   default_cache_behavior {
@@ -38,7 +38,7 @@ resource "aws_cloudfront_distribution" "s3_distribution" {
     max_ttl                = 86400
   }
 
-  price_class = "PriceClass_100"
+  price_class =var.cloudfront_priceClass
 
   restrictions {
     geo_restriction {
@@ -48,7 +48,7 @@ resource "aws_cloudfront_distribution" "s3_distribution" {
   }
 
   tags = {
-    Environment = "production"
+    Environment = var.environment
   }
 
   viewer_certificate {

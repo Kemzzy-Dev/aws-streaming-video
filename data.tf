@@ -5,5 +5,5 @@ data "aws_route53_zone" "zone" {
 
 data "aws_acm_certificate" "cert" {
   domain   = "devobs.me"
-  statuses = ["ISSUED"] 
+  statuses = ["ISSUED"]
 }

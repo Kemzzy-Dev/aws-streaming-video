@@ -7,6 +7,7 @@ resource "aws_s3_bucket" "video_bucket" {
   }
 }
 
+# Enable versioning
 resource "aws_s3_bucket_versioning" "video_bucket_versioning" {
   bucket = aws_s3_bucket.video_bucket.id
   versioning_configuration {
@@ -14,7 +15,7 @@ resource "aws_s3_bucket_versioning" "video_bucket_versioning" {
   }
 }
 
-
+# Bucket policy to allow read access from CloudFront and prevent direct access to our bucket
 resource "aws_s3_bucket_policy" "video_stream" {
   bucket = aws_s3_bucket.video_bucket.id
   policy = <<POLICY
@@ -35,7 +36,7 @@ resource "aws_s3_bucket_policy" "video_stream" {
   POLICY
 }
 
-
+# replace with the path to the video you want to upload
 resource "aws_s3_object" "new_video" {
   bucket       = aws_s3_bucket.video_bucket.id
   key          = "new-video"
@@ -46,6 +47,4 @@ resource "aws_s3_object" "new_video" {
   depends_on = [aws_s3_bucket.video_bucket]
 }
 
-output "bucket_name" {
-  value = aws_s3_bucket.video_bucket.bucket
-}
+
