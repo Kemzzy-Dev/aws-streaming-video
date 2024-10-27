@@ -37,13 +37,13 @@ resource "aws_s3_bucket_policy" "video_stream" {
 
 
 resource "aws_s3_object" "new_video" {
-  bucket = aws_s3_bucket.video_bucket.id
-  key    = "new-video"
-  source = "${path.module}/Bleach-82.mkv"
-  etag   = filemd5("${path.module}/Bleach-82.mkv")
+  bucket       = aws_s3_bucket.video_bucket.id
+  key          = "new-video"
+  source       = "${path.module}/Bleach-356.mp4"
+  etag         = filemd5("${path.module}/Bleach-356.mp4")
   content_type = "video/mp4"
 
-  depends_on = [ aws_s3_bucket.video_bucket ]
+  depends_on = [aws_s3_bucket.video_bucket]
 }
 
 output "bucket_name" {

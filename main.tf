@@ -2,18 +2,10 @@ resource "aws_cloudfront_origin_access_identity" "cloudfront_OAI" {
   comment = "OAI for video streaming S3 bucket"
 }
 
-# resource "aws_cloudfront_origin_access_control" "sample_cloudfront_OAC" {
-#   name                              = "cloudfront OAC"
-#   description                       = "cloudfront Policy"
-#   origin_access_control_origin_type = "s3"
-#   signing_behavior                  = "always"
-#   signing_protocol                  = "sigv4"
-# }
-
 resource "aws_cloudfront_distribution" "s3_distribution" {
   origin {
-    domain_name              = aws_s3_bucket.video_bucket.bucket_regional_domain_name
-    origin_id                = aws_s3_bucket.video_bucket.id
+    domain_name = aws_s3_bucket.video_bucket.bucket_regional_domain_name
+    origin_id   = aws_s3_bucket.video_bucket.id
 
     s3_origin_config {
       origin_access_identity = aws_cloudfront_origin_access_identity.cloudfront_OAI.cloudfront_access_identity_path
@@ -24,7 +16,8 @@ resource "aws_cloudfront_distribution" "s3_distribution" {
   is_ipv6_enabled = true
   comment         = "play video"
 
-  #   aliases = ["mysite.example.com", "yoursite.example.com"]
+  aliases = ["videostream.devobs.me"]
+
 
   default_cache_behavior {
     allowed_methods  = ["DELETE", "GET", "HEAD", "OPTIONS", "PATCH", "POST", "PUT"]
@@ -45,12 +38,12 @@ resource "aws_cloudfront_distribution" "s3_distribution" {
     max_ttl                = 86400
   }
 
-  price_class = "PriceClass_200"
+  price_class = "PriceClass_100"
 
   restrictions {
     geo_restriction {
       restriction_type = "none"
-      locations        = [ ]
+      locations        = []
     }
   }
 
@@ -59,15 +52,11 @@ resource "aws_cloudfront_distribution" "s3_distribution" {
   }
 
   viewer_certificate {
-    cloudfront_default_certificate = true
+    # cloudfront_default_certificate = true
+    acm_certificate_arn = data.aws_acm_certificate.cert.arn
+    ssl_support_method  = "sni-only"
+
   }
-
-  depends_on = [ aws_s3_bucket.video_bucket ]
-}
-
-
-output "cloudfront_url" { 
-  value = aws_cloudfront_distribution.s3_distribution.domain_name
 }
 
 

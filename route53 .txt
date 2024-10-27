@@ -1,22 +1,8 @@
 
-resource "aws_route53_record" "www" {
-  zone_id = data.aws_route53_zone.zone.zone_id
-  name    = "videostream.devobs.me"
-  type    = "CNAME"
-  ttl     = 300
-  records = [aws_cloudfront_distribution.s3_distribution.domain_name]
-
-  lifecycle {
-    create_before_destroy = true
-  }
-
-}
-
-
 # Create route53 zone
-# resource "aws_route53_zone" "primary" {
-#   name = "devobs.me"
-# }
+resource "aws_route53_zone" "primary" {
+  name = "devobs.me"
+}
 
 # # Create an ACM certificate
 # resource "aws_acm_certificate" "video_cert" {
@@ -57,26 +43,42 @@ resource "aws_route53_record" "www" {
 #   depends_on = [ aws_acm_certificate.video_cert ]
 # }
 
-# module "acm" {
-#   source  = "terraform-aws-modules/acm/aws"
-#   version = "~> 4.0"
 
-#   domain_name  = "devobs.me"
-#   zone_id      = aws_route53_zone.primary.zone_id
 
-#   validation_method = "DNS"
+resource "aws_route53_record" "www" {
+  zone_id = aws_route53_zone.primary.zone_id
+  name    = "videostream.devobs.me"
+  type    = "CNAME"
+  ttl     = 300
+  records = [aws_cloudfront_distribution.s3_distribution.domain_name]
 
-#   subject_alternative_names = [
-#     "videostream.devobs.me",
-#   ]
+  lifecycle {
+    create_before_destroy = true
+  }
 
-#   wait_for_validation = true
+  depends_on = [ module.acm ]
+}
 
-#   tags = {
-#     Name = "devobs.me"
-#   }
-# }
+module "acm" {
+  source  = "terraform-aws-modules/acm/aws"
+  version = "~> 4.0"
 
-# output "acm" {
-#   value = module.acm
-# }
+  domain_name  = "devobs.me"
+  zone_id      = aws_route53_zone.primary.zone_id
+
+  validation_method = "DNS"
+
+  subject_alternative_names = [
+    "videostream.devobs.me",
+  ]
+
+  wait_for_validation = true
+
+  tags = {
+    Name = "devobs.me"
+  }
+}
+
+output "acm" {
+  value = module.acm
+}
