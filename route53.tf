@@ -21,9 +21,9 @@ resource "aws_route53_record" "video_subdomain" {
 #   name = "devobs.me"
 # }
 
-# # Create an ACM certificate
+# Create an ACM certificate
 # resource "aws_acm_certificate" "video_cert" {
-#   domain_name               = "devobs.me"
+#   domain_name               = var.domain
 #   subject_alternative_names = ["*.devobs.me"]
 #   validation_method         = "DNS"
 

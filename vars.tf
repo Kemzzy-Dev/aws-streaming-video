@@ -3,6 +3,11 @@ variable "subdomain" {
   default = "videostream.devobs.me"
 }
 
+variable "domain" {
+  type    = string
+  default = "devobs.me"
+}
+
 variable "cloudfront_priceClass" {
   type = string
   default = "PriceClass_100"
